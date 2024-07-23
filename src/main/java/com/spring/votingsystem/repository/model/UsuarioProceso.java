@@ -30,5 +30,5 @@ public class UsuarioProceso {
     @JsonIgnore
     private Proceso proceso;
 
-    private String voto;
+    private Long idPartido;
 }

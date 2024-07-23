@@ -32,4 +32,7 @@ public class Partido {
     @JoinColumn(name = "id_proceso")
     @JsonIgnore
     private Proceso proceso;
+
+    @Column(name = "num_votos")
+    private Long numVotos;
 }

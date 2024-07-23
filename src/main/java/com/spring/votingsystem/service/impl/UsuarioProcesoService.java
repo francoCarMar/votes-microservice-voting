@@ -1,6 +1,7 @@
 package com.spring.votingsystem.service.impl;
 
 import com.spring.votingsystem.dto.VotoDTO;
+import com.spring.votingsystem.exceptions.ExistVoteRegistryException;
 import com.spring.votingsystem.repository.UsuarioProcesoJPARepository;
 import com.spring.votingsystem.repository.model.UsuarioProceso;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,15 @@ public class UsuarioProcesoService {
         List<UsuarioProceso> usuariosProceso = findAllByProcesoIdProceso(votoDTO.idProceso());
         for (UsuarioProceso usuarioProceso : usuariosProceso) {
             if (usuarioProceso.getEmail().equals(votoDTO.email())) {
-                usuarioProceso.setVoto(votoDTO.voto());
+                if(usuarioProceso.getEstadoVoto().equals("Votado")){
+                    throw new ExistVoteRegistryException();
+                }
+                usuarioProceso.setIdPartido(votoDTO.idPartido());
+                usuarioProceso.setEstadoVoto("Votado");
                 return usuarioProcesoJPARepository.save(usuarioProceso);
             }
         }
-        return null;
+        throw new RuntimeException("Usuario no encontrado");
     }
 
 }

@@ -7,6 +7,8 @@ import com.spring.votingsystem.service.PartidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class PartidoServiceImpl implements PartidoService {
@@ -30,12 +32,23 @@ public class PartidoServiceImpl implements PartidoService {
     }
 
     private Partido toEntity(PartyRequest partyRequest) {
-        return Partido.builder()
-                .idPartido(partyRequest.getIdPartido())
-                .nombrePartido(partyRequest.getNombrePartido())
-                .nombrePostulante(partyRequest.getNombrePostulante())
-                .imagenPartido(partyRequest.getImagenPartido())
-                .build();
+        return Partido.builder().idPartido(partyRequest.getIdPartido()).nombrePartido(partyRequest.getNombrePartido()).nombrePostulante(partyRequest.getNombrePostulante()).imagenPartido(partyRequest.getImagenPartido()).build();
+    }
+
+    public Partido vote(Long idPartido) {
+        Partido partido = partidoRepository.findById(idPartido).orElseThrow();
+        if(partido.getNumVotos() == null)
+            partido.setNumVotos(0L);
+        partido.setNumVotos((partido.getNumVotos() + 1));
+        return partidoRepository.save(partido);
+    }
+
+    public List<Partido> getPartiesByProcess(Long idProcess) {
+        List<Partido> partidos = partidoRepository.findAllByProcesoIdProceso(idProcess);
+        if (partidos.isEmpty()) {
+            throw new RuntimeException("No se encontraron partidos para el proceso con ID " + idProcess);
+        }
+        return partidos;
     }
 
 }

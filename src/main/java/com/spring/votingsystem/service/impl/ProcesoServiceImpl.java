@@ -66,6 +66,10 @@ public class ProcesoServiceImpl implements ProcesoService {
     }
 
     public List<Proceso> getAllProcesosByAdmin(String emailAdmin) {
+        List<Proceso> procesos = procesoRepository.findAllByEmailAdmin(emailAdmin);
+        if(procesos.isEmpty()) {
+            throw new RuntimeException("No se encontraron procesos para el administrador con email " + emailAdmin);
+        }
         return procesoRepository.findAllByEmailAdmin(emailAdmin);
     }
 }

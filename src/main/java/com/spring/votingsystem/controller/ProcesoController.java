@@ -71,7 +71,7 @@ public class ProcesoController {
                 usuarioProceso.setEmail(email);
                 usuarioProceso.setProceso(p);
                 usuarioProceso.setEstadoVoto("sin votar");
-                usuarioProceso.setVoto(null);
+                usuarioProceso.setIdPartido(null);
                 usuarioProcesos.add(usuarioProceso);
             }
             List<Partido> partidos = new ArrayList<>();
@@ -97,7 +97,7 @@ public class ProcesoController {
         try {
             return ResponseEntity.ok(procesoServiceImpl.getAllProcesosByAdmin(emailAdmin));
         }catch (Exception e){
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
     }
 }
