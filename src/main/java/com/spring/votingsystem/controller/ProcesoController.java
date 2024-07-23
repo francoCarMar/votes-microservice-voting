@@ -11,6 +11,7 @@ import com.spring.votingsystem.service.UserService;
 import com.spring.votingsystem.service.impl.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,8 @@ public class ProcesoController {
 
     @Autowired
     private ProcessService processService;
+    @Autowired
+    private ProcesoServiceImpl procesoServiceImpl;
 
     @GetMapping("getAllProcess")
     public List<Proceso> getAllProcess() {
@@ -55,33 +58,46 @@ public class ProcesoController {
     }
 
     @PostMapping(path = "create-process", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public Proceso createProcessCSV(@RequestPart("file") MultipartFile file, @RequestPart String procesoStr) {
-        ProcessRequest proceso = ProcessRequest.fromJson(procesoStr);
-        List<UserDTO> usuariosDTO = UserDTOMapper.CSVToUserDTO(file);
-        UserService.createUsers(file);
-        List<UsuarioProceso> usuarioProcesos = new ArrayList<>();
-        Proceso p = ProcesoServiceImpl.toEntity(proceso);
-        for (UserDTO userDTO : usuariosDTO) {
-            String email = userDTO.getEmail();
-            UsuarioProceso usuarioProceso = new UsuarioProceso();
-            usuarioProceso.setEmail(email);
-            usuarioProceso.setProceso(p);
-            usuarioProceso.setEstadoVoto("sin votar");
-            usuarioProceso.setVoto(null);
-            usuarioProcesos.add(usuarioProceso);
+    public ResponseEntity<Proceso> createProcessCSV(@RequestPart("file") MultipartFile file, @RequestPart String procesoStr) {
+        try {
+            ProcessRequest proceso = ProcessRequest.fromJson(procesoStr);
+            List<UserDTO> usuariosDTO = UserDTOMapper.CSVToUserDTO(file);
+            UserService.createUsers(file);
+            List<UsuarioProceso> usuarioProcesos = new ArrayList<>();
+            Proceso p = ProcesoServiceImpl.toEntity(proceso);
+            for (UserDTO userDTO : usuariosDTO) {
+                String email = userDTO.getEmail();
+                UsuarioProceso usuarioProceso = new UsuarioProceso();
+                usuarioProceso.setEmail(email);
+                usuarioProceso.setProceso(p);
+                usuarioProceso.setEstadoVoto("sin votar");
+                usuarioProceso.setVoto(null);
+                usuarioProcesos.add(usuarioProceso);
+            }
+            List<Partido> partidos = new ArrayList<>();
+            for (Partido partido : proceso.getPartidos()) {
+                Partido p1 = Partido.builder()
+                        .nombrePartido(partido.getNombrePartido())
+                        .nombrePostulante(partido.getNombrePostulante())
+                        .imagenPartido(partido.getImagenPartido())
+                        .proceso(p)
+                        .build();
+                partidos.add(p1);
+            }
+            p.setUsuarioProceso(usuarioProcesos);
+            p.setPartidoProceso(partidos);
+            return ResponseEntity.ok(processService.createProcess(p));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
         }
-        List<Partido> partidos = new ArrayList<>();
-        for (Partido partido : proceso.getPartidos()) {
-            Partido p1 = Partido.builder()
-                    .nombrePartido(partido.getNombrePartido())
-                    .nombrePostulante(partido.getNombrePostulante())
-                    .imagenPartido(partido.getImagenPartido())
-                    .proceso(p)
-                    .build();
-            partidos.add(p1);
+    }
+
+    @GetMapping("get-process-email-admin/{emailAdmin}")
+    public ResponseEntity<List<Proceso>> getAllProcessByAdmin(@PathVariable String emailAdmin) {
+        try {
+            return ResponseEntity.ok(procesoServiceImpl.getAllProcesosByAdmin(emailAdmin));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
         }
-        p.setUsuarioProceso(usuarioProcesos);
-        p.setPartidoProceso(partidos);
-        return processService.createProcess(p);
     }
 }

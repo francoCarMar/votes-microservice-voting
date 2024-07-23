@@ -44,5 +44,6 @@ public class Proceso {
     private List<Partido> partidoProceso;
 
     @Column(name = "email_admin")
+    @NonNull
     private String emailAdmin;
 }

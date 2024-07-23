@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface UsuarioProcesoJPARepository extends JpaRepository<UsuarioProceso, Long> {
     List<UsuarioProceso> findAllByProcesoIdProceso(Long idProcess);
+    List<UsuarioProceso> findAllByEmail(String emailUser);
 }

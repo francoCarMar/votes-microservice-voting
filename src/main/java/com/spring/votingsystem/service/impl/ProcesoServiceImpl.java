@@ -2,6 +2,7 @@ package com.spring.votingsystem.service.impl;
 
 import com.spring.votingsystem.controller.request.ProcessRequest;
 import com.spring.votingsystem.repository.ProcesoJPARepository;
+import com.spring.votingsystem.repository.model.Partido;
 import com.spring.votingsystem.repository.model.Proceso;
 import com.spring.votingsystem.service.ProcesoService;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,11 @@ public class ProcesoServiceImpl implements ProcesoService {
                 .tiempoEspera(processRequest.getTiempoEspera())
                 .partidoProceso(processRequest.getPartidos())
                 .estadoProceso(processRequest.getEstadoProceso())
+                .emailAdmin(processRequest.getEmailAdmin())
                 .build();
+    }
+
+    public List<Proceso> getAllProcesosByAdmin(String emailAdmin) {
+        return procesoRepository.findAllByEmailAdmin(emailAdmin);
     }
 }
