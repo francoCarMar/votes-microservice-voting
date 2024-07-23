@@ -2,6 +2,7 @@ package com.spring.votingsystem.service.impl;
 
 import com.spring.votingsystem.controller.request.PartyRequest;
 import com.spring.votingsystem.repository.PartidoJPARepository;
+import com.spring.votingsystem.repository.ProcesoJPARepository;
 import com.spring.votingsystem.repository.model.Partido;
 import com.spring.votingsystem.repository.model.Proceso;
 import com.spring.votingsystem.service.PartidoService;
@@ -17,6 +18,9 @@ public class PartidoServiceImpl implements PartidoService {
 
     @Autowired
     private PartidoJPARepository partidoRepository;
+
+    @Autowired
+    private ProcesoJPARepository procesoJPARepository;
 
     @Override
     public Partido getParty(Long id) {
@@ -39,7 +43,7 @@ public class PartidoServiceImpl implements PartidoService {
 
     public Partido vote(Long idPartido) {
         Partido partido = partidoRepository.findById(idPartido).orElseThrow();
-        if(partido.getNumVotos() == null)
+        if (partido.getNumVotos() == null)
             partido.setNumVotos(0L);
         partido.setNumVotos((partido.getNumVotos() + 1));
         return partidoRepository.save(partido);
@@ -53,22 +57,4 @@ public class PartidoServiceImpl implements PartidoService {
         return partidos;
     }
 
-
-    public Object winner(Proceso proceso){
-        List<Partido> partidos = partidoRepository.findAllByProcesoIdProceso(proceso.getIdProceso());
-        Partido winner = partidos.get(0);
-        for (Partido partido : partidos) {
-            if(partido.getNumVotos() > winner.getNumVotos()){
-                winner = partido;
-            }
-        }
-        Date fechaActual = new Date();
-        Date fechaFin = proceso.getFechaFin();
-        if(fechaActual.after(fechaFin)){
-            return winner.getNombrePartido();
-        }else{
-            return partidos;
-        }
-
-    }
 }
