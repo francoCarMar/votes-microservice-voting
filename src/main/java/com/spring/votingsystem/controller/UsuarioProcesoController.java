@@ -22,7 +22,7 @@ public class UsuarioProcesoController {
     private PartidoServiceImpl partidoService;
 
     @GetMapping("get-user-process-email/{emailUser}")
-    public ResponseEntity<List<UsuarioProceso>> findAllByEmailUsuario(@PathVariable String emailUser) {
+    public ResponseEntity<?> findAllByEmailUsuario(@PathVariable String emailUser) {
         try {
             return ResponseEntity.ok(usuarioProcesoService.findAllByEmailUsuario(emailUser));
         } catch (Exception e) {

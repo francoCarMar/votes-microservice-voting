@@ -1,5 +1,6 @@
 package com.spring.votingsystem.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.transaction.Transactional;
 import lombok.*;
@@ -37,7 +38,7 @@ public class Proceso {
     private String estadoProceso;
 
     @OneToMany(mappedBy = "proceso", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonBackReference
     private List<UsuarioProceso> usuarioProceso;
 
     @OneToMany(mappedBy = "proceso", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

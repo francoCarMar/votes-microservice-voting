@@ -3,10 +3,12 @@ package com.spring.votingsystem.service.impl;
 import com.spring.votingsystem.controller.request.PartyRequest;
 import com.spring.votingsystem.repository.PartidoJPARepository;
 import com.spring.votingsystem.repository.model.Partido;
+import com.spring.votingsystem.repository.model.Proceso;
 import com.spring.votingsystem.service.PartidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -51,4 +53,22 @@ public class PartidoServiceImpl implements PartidoService {
         return partidos;
     }
 
+
+    public Object winner(Proceso proceso){
+        List<Partido> partidos = partidoRepository.findAllByProcesoIdProceso(proceso.getIdProceso());
+        Partido winner = partidos.get(0);
+        for (Partido partido : partidos) {
+            if(partido.getNumVotos() > winner.getNumVotos()){
+                winner = partido;
+            }
+        }
+        Date fechaActual = new Date();
+        Date fechaFin = proceso.getFechaFin();
+        if(fechaActual.after(fechaFin)){
+            return winner.getNombrePartido();
+        }else{
+            return partidos;
+        }
+
+    }
 }
